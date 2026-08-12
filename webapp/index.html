@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Football Model Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="brand-mark" href="#top">FP</a>
+        <nav class="site-nav">
+          <a class="nav-pill" href="#predict">Live</a>
+          <a class="nav-pill" href="#similarity">Similar</a>
+          <a class="nav-pill" href="#recommendations">Recommend</a>
+          <a class="nav-pill" href="#player-tools">Scout</a>
+          <a class="nav-pill" href="#radar-compare">Radar</a>
+          <a class="nav-pill" href="#player-intelligence">Intelligence</a>
+          <a class="nav-pill" href="#clustering">Clusters</a>
+          <a class="nav-pill" href="#market-value">Value</a>
+          <a class="nav-pill" href="#injury-risk">Injury</a>
+          <a class="nav-pill" href="#transfer-replace">Transfer</a>
+          <a class="nav-pill" href="#best-xi">Best XI</a>
+          <a class="nav-pill" href="#compare">Models</a>
+          <a class="nav-pill" href="#awards">Awards</a>
+          <a class="nav-pill" href="#dataset-lab">Batch</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero-panel" id="top">
+          <div class="eyebrow">Model Refresh Dashboard</div>
+          <div class="hero-grid">
+            <div>
+              <h1 id="hero-title">Football Models.
+Made Visible.</h1>
+              <p class="hero-copy" id="hero-subtitle">
+                A Wise-inspired dashboard for accuracy, comparisons, findings, and live model-backed predictions.
+              </p>
+              <div class="hero-actions">
+                <a class="primary-pill" href="#compare">See Comparisons</a>
+                <a class="secondary-pill" href="#predict">Open Live Predictor</a>
+              </div>
+            </div>
+            <div class="hero-side-card">
+              <div class="side-kicker">Current scope</div>
+              <div id="hero-meta" class="hero-meta-grid"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="predict-section" id="predict">
+          <div class="section-head inverted">
+            <div class="eyebrow">Live Predictor</div>
+            <h2>Run the exported models on your own player profile.</h2>
+            <p id="predictor-note" class="predictor-note"></p>
+          </div>
+
+          <div class="predict-grid">
+            <article class="predict-card">
+              <div class="card-kicker">Position Classifier</div>
+              <h3>Same-season stat-line benchmarking.</h3>
+              <form id="position-form" class="model-form"></form>
+              <div id="position-result" class="result-panel empty-state">
+                Submit a profile to see position probabilities and derived role metrics.
+              </div>
+            </article>
+
+            <article class="predict-card">
+              <div class="card-kicker">Goals Regressor</div>
+              <h3>Leakage-safe goal prediction.</h3>
+              <label class="sync-toggle">
+                <input id="sync-position-toggle" type="checkbox" checked />
+                Use the last predicted position inside the goals model
+              </label>
+              <form id="goals-form" class="model-form"></form>
+              <div id="goals-result" class="result-panel empty-state">
+                Submit a profile to estimate goals, percentile, and derived attacking rates.
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ==================== SIMILARITY ==================== -->
+        <section class="section-block" id="similarity">
+          <div class="section-head">
+            <div class="eyebrow">Player Similarity</div>
+            <h2>Find your player's closest matches in feature space.</h2>
+            <p class="section-copy">
+              Enter a player's name to discover the most similar players based on their performance profile.
+              Switch between Cosine Similarity and Euclidean Distance metrics.
+            </p>
+          </div>
+
+          <div class="split-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Find Similar Players</div>
+              <h3>Enter a player name to see their closest matches.</h3>
+              <div class="field-group">
+                <div class="field">
+                  <label for="similarity-player-input">Player Name</label>
+                  <div class="autocomplete-container">
+                    <input
+                      id="similarity-player-input"
+                      type="text"
+                      placeholder="e.g., Mbappé, Haaland, Vinicius Jr..."
+                      autocomplete="off"
+                    />
+                    <div id="similarity-autocomplete" class="autocomplete-dropdown"></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="similarity-top-k">Number of Similar Players</label>
+                  <select id="similarity-top-k">
+                    <option value="3">Top 3</option>
+                    <option value="5" selected>Top 5</option>
+                    <option value="8">Top 8</option>
+                    <option value="10">Top 10</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="similarity-metric">Similarity Metric</label>
+                  <select id="similarity-metric">
+                    <option value="cosine" selected>Cosine Similarity</option>
+                    <option value="euclidean">Euclidean Distance</option>
+                  </select>
+                </div>
+              </div>
+              <button class="submit-button" id="similarity-search-btn" type="button">Find Similar Players</button>
+              <div id="similarity-status" class="form-note"></div>
+            </article>
+
+            <article class="surface-card">
+              <div class="card-kicker">Reference Player</div>
+              <h3>Profile of the selected player.</h3>
+              <div id="similarity-subject-profile" class="player-profile-card empty-state">
+                Select a player to see their profile.
+              </div>
+            </article>
+          </div>
+
+          <div class="similarity-results-grid">
+            <div id="similarity-results" class="similar-players-grid"></div>
+          </div>
+        </section>
+
+        <!-- ==================== RECOMMENDATIONS ==================== -->
+        <section class="section-block" id="recommendations">
+          <div class="section-head">
+            <div class="eyebrow">Player Recommendation System</div>
+            <h2>Shortlist high-fit players from the latest season.</h2>
+            <p class="section-copy">
+              Filter by position, age, and minutes to surface recommended players ranked by the dashboard's composite performance score.
+            </p>
+          </div>
+          <div class="split-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Recommendation Filters</div>
+              <h3>Build a shortlist.</h3>
+              <div class="field-group">
+                <div class="field">
+                  <label for="rec-position">Position</label>
+                  <select id="rec-position">
+                    <option value="">Any position</option>
+                    <option value="GK">Goalkeeper</option>
+                    <option value="DF">Defender</option>
+                    <option value="MF">Midfielder</option>
+                    <option value="FW">Forward</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="rec-max-age">Maximum age</label>
+                  <input id="rec-max-age" type="number" min="16" max="45" placeholder="No limit" />
+                </div>
+                <div class="field">
+                  <label for="rec-min-90s">Minimum 90s</label>
+                  <input id="rec-min-90s" type="number" min="0" max="40" step="1" value="8" />
+                </div>
+              </div>
+              <button class="submit-button" id="rec-run-btn" type="button">Find Recommendations</button>
+              <div id="rec-status" class="form-note"></div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Recommended Players</div>
+              <h3>Ranked shortlist.</h3>
+              <div id="rec-results" class="recommendation-list empty-state">Run a recommendation search to see players.</div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ==================== PLAYER TOOLS ==================== -->
+        <section class="section-block" id="player-tools">
+          <div class="section-head">
+            <div class="eyebrow">Compare, Scout Report &amp; Role Detection</div>
+            <h2>Turn a player search into decision support.</h2>
+            <p class="section-copy">
+              Compare two players, generate a compact scout report, or detect a player's statistical role from the same model-backed dataset.
+            </p>
+          </div>
+          <div class="triple-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Compare Two Players</div>
+              <h3>Raw metric head-to-head.</h3>
+              <div class="field-group">
+                <div class="field"><label for="cmp-player-a">Player A</label><div class="autocomplete-container"><input id="cmp-player-a" type="text" autocomplete="off" /><div id="cmp-autocomplete-a" class="autocomplete-dropdown"></div></div></div>
+                <div class="field"><label for="cmp-player-b">Player B</label><div class="autocomplete-container"><input id="cmp-player-b" type="text" autocomplete="off" /><div id="cmp-autocomplete-b" class="autocomplete-dropdown"></div></div></div>
+              </div>
+              <button class="submit-button" id="cmp-run-btn" type="button">Compare Players</button>
+              <div id="cmp-results" class="tool-result empty-state">Choose two players to compare.</div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Scout Report Generator</div>
+              <h3>Profile, role, strengths, similar players.</h3>
+              <div class="field-group">
+                <div class="field"><label for="scout-player">Player</label><div class="autocomplete-container"><input id="scout-player" type="text" autocomplete="off" /><div id="scout-autocomplete" class="autocomplete-dropdown"></div></div></div>
+              </div>
+              <button class="submit-button" id="scout-run-btn" type="button">Generate Report</button>
+              <div id="scout-results" class="tool-result empty-state">Choose a player to generate a report.</div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Player Role Detection</div>
+              <h3>Statistical role profile.</h3>
+              <div class="field-group">
+                <div class="field"><label for="role-player">Player</label><div class="autocomplete-container"><input id="role-player" type="text" autocomplete="off" /><div id="role-autocomplete" class="autocomplete-dropdown"></div></div></div>
+              </div>
+              <button class="submit-button" id="role-run-btn" type="button">Detect Role</button>
+              <div id="role-results" class="tool-result empty-state">Choose a player to detect role.</div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ==================== RADAR COMPARE ==================== -->
+        <section class="section-block" id="radar-compare">
+          <div class="section-head">
+            <div class="eyebrow">Radar Chart Comparison</div>
+            <h2>Visual head-to-head performance comparison.</h2>
+            <p class="section-copy">
+              Compare one or two players across 8 key performance metrics using a live radar chart.
+              All values are percentile-ranked against the full player database.
+            </p>
+          </div>
+          <div class="split-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Player Selection</div>
+              <h3>Choose up to two players to compare.</h3>
+              <div class="field-group">
+                <div class="field">
+                  <label for="radar-player1">Player 1</label>
+                  <div class="autocomplete-container">
+                    <input id="radar-player1" type="text" placeholder="e.g., Haaland..." autocomplete="off" />
+                    <div id="radar-autocomplete1" class="autocomplete-dropdown"></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="radar-player2">Player 2 (optional)</label>
+                  <div class="autocomplete-container">
+                    <input id="radar-player2" type="text" placeholder="e.g., Mbappé..." autocomplete="off" />
+                    <div id="radar-autocomplete2" class="autocomplete-dropdown"></div>
+                  </div>
+                </div>
+              </div>
+              <button class="submit-button" id="radar-search-btn" type="button">Generate Radar</button>
+              <div id="radar-status" class="form-note"></div>
+              <div id="radar-legend" class="radar-legend"></div>
+            </article>
+            <article class="surface-card radar-chart-card">
+              <div class="card-kicker">Radar Chart</div>
+              <h3>Percentile-based performance profile.</h3>
+              <div id="radar-container" class="radar-container">
+                <div class="empty-state">Select a player above to generate the radar chart.</div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ==================== PLAYER INTELLIGENCE ==================== -->
+        <section class="section-block" id="player-intelligence">
+          <div class="section-head">
+            <div class="eyebrow">Player Intelligence</div>
+            <h2>Strengths, Weaknesses, Potential &amp; Explainable AI.</h2>
+            <p class="section-copy">
+              Deep-dive into any player's profile: discover their top strengths and weaknesses vs positional peers,
+              their future potential score, and transparent AI explanations for model predictions.
+            </p>
+          </div>
+          <div class="field-group" style="max-width: 520px; margin: 0 auto 2rem;">
+            <div class="field">
+              <label for="intel-player-input">Player Name</label>
+              <div class="autocomplete-container">
+                <input id="intel-player-input" type="text" placeholder="e.g., Bellingham, Pedri..." autocomplete="off" />
+                <div id="intel-autocomplete" class="autocomplete-dropdown"></div>
+              </div>
+            </div>
+            <button class="submit-button" id="intel-search-btn" type="button">Analyse Player</button>
+          </div>
+          <div id="intel-status" class="form-note" style="text-align:center; margin-bottom:1rem;"></div>
+
+          <div class="triple-grid" id="intel-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Strengths &amp; Weaknesses</div>
+              <h3>Vs same-position peers.</h3>
+              <div id="sw-panel" class="empty-state">Run an analysis to see results.</div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Player Potential Score</div>
+              <h3>Future ceiling prediction.</h3>
+              <div id="potential-panel" class="empty-state">Run an analysis to see results.</div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Explainable AI (SHAP)</div>
+              <h3>Feature attribution for position prediction.</h3>
+              <div id="shap-panel" class="empty-state">Run an analysis to see results.</div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ==================== CLUSTERING ==================== -->
+        <section class="section-block" id="clustering">
+          <div class="section-head">
+            <div class="eyebrow">Player Clustering</div>
+            <h2>Playing-style groups via K-Means clustering.</h2>
+            <p class="section-copy">
+              Players are grouped into 4 style categories using K-Means on performance statistics.
+              Each cluster represents a distinct playing archetype.
+            </p>
+          </div>
+          <div id="cluster-status" class="form-note" style="text-align:center; margin-bottom:1.5rem;"></div>
+          <div id="cluster-summary" class="cluster-summary-grid"></div>
+          <div class="surface-card" style="margin-top:1.5rem;">
+            <div class="card-kicker">Sample Players by Cluster</div>
+            <h3>First 200 players with cluster assignments.</h3>
+            <div class="field" style="margin-bottom:1rem;">
+              <label for="cluster-filter">Filter by cluster</label>
+              <select id="cluster-filter">
+                <option value="all">All Clusters</option>
+                <option value="Finisher">&#x26BD; Finisher</option>
+                <option value="Playmaker">&#x1F3AF; Playmaker</option>
+                <option value="Defensive">&#x1F6E1;&#xFE0F; Defensive</option>
+                <option value="Box-to-Box">&#x26A1; Box-to-Box</option>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom:1rem; max-width:240px;">
+              <label for="cluster-algorithm">Algorithm</label>
+              <select id="cluster-algorithm">
+                <option value="kmeans" selected>K-Means</option>
+                <option value="dbscan">DBSCAN</option>
+              </select>
+            </div>
+            <div id="cluster-players" class="cluster-player-grid"></div>
+          </div>
+        </section>
+
+        <!-- ==================== MARKET VALUE ==================== -->
+        <section class="section-block" id="market-value">
+          <div class="section-head">
+            <div class="eyebrow">Market Value Prediction</div>
+            <h2>Estimate a player's relative market value index.</h2>
+            <p class="section-copy">
+              Input a player's key statistics to estimate their relative market value in &euro;M.
+              This is a performance-based index, not an official transfer fee.
+            </p>
+          </div>
+          <div class="split-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Player Stats</div>
+              <h3>Enter performance metrics.</h3>
+              <form id="mv-form" class="model-form">
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="mv-gls">Goals (Gls)</label>
+                    <input id="mv-gls" type="number" min="0" max="60" step="1" value="10" />
+                  </div>
+                  <div class="field">
+                    <label for="mv-ast">Assists (Ast)</label>
+                    <input id="mv-ast" type="number" min="0" max="40" step="1" value="5" />
+                  </div>
+                  <div class="field">
+                    <label for="mv-xg">xG</label>
+                    <input id="mv-xg" type="number" min="0" max="50" step="0.1" value="8.5" />
+                  </div>
+                  <div class="field">
+                    <label for="mv-xag">xAG</label>
+                    <input id="mv-xag" type="number" min="0" max="30" step="0.1" value="4.0" />
+                  </div>
+                  <div class="field">
+                    <label for="mv-prgc">Progressive Carries (PrgC)</label>
+                    <input id="mv-prgc" type="number" min="0" max="500" step="1" value="80" />
+                  </div>
+                  <div class="field">
+                    <label for="mv-prgp">Progressive Passes (PrgP)</label>
+                    <input id="mv-prgp" type="number" min="0" max="500" step="1" value="100" />
+                  </div>
+                  <div class="field">
+                    <label for="mv-prgr">Progressive Runs (PrgR)</label>
+                    <input id="mv-prgr" type="number" min="0" max="500" step="1" value="90" />
+                  </div>
+                  <div class="field">
+                    <label for="mv-90s">90s Played</label>
+                    <input id="mv-90s" type="number" min="0" max="38" step="0.1" value="25" />
+                  </div>
+                </div>
+                <button class="submit-button" type="submit">Estimate Market Value</button>
+              </form>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Value Estimate</div>
+              <h3>Relative performance value index.</h3>
+              <div id="mv-result" class="empty-state">Fill in the stats and click Estimate Market Value.</div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ==================== INJURY RISK ==================== -->
+        <section class="section-block" id="injury-risk">
+          <div class="section-head">
+            <div class="eyebrow">Injury Risk Prediction</div>
+            <h2>Dataset readiness check.</h2>
+            <p class="section-copy">
+              The app checks the dataset before enabling injury risk prediction and will not show fake medical risk scores.
+            </p>
+          </div>
+          <article class="surface-card">
+            <div class="card-kicker">Availability</div>
+            <h3>Required data check.</h3>
+            <button class="submit-button" id="injury-check-btn" type="button">Check Injury Data</button>
+            <div id="injury-result" class="tool-result empty-state">Run the check to see whether injury prediction can be trained.</div>
+          </article>
+        </section>
+
+        <!-- ==================== TRANSFER REPLACEMENT ==================== -->
+        <section class="section-block" id="transfer-replace">
+          <div class="section-head">
+            <div class="eyebrow">Transfer Replacement</div>
+            <h2>Find the best statistical replacements for any player.</h2>
+            <p class="section-copy">
+              Search for players with similar statistical profiles and playing styles who could
+              replace a departing player. Filters by position, age bracket, and excludes same-squad players.
+            </p>
+          </div>
+          <div class="split-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Search Options</div>
+              <h3>Configure the replacement search.</h3>
+              <div class="field-group">
+                <div class="field">
+                  <label for="tr-player-input">Player to Replace</label>
+                  <div class="autocomplete-container">
+                    <input id="tr-player-input" type="text" placeholder="e.g., Salah, De Bruyne..." autocomplete="off" />
+                    <div id="tr-autocomplete" class="autocomplete-dropdown"></div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="tr-age-range">Age Flexibility (&plusmn;years)</label>
+                  <select id="tr-age-range">
+                    <option value="3">&plusmn;3 years</option>
+                    <option value="5" selected>&plusmn;5 years</option>
+                    <option value="8">&plusmn;8 years</option>
+                    <option value="99">Any age</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="tr-top-k">Number of Suggestions</label>
+                  <select id="tr-top-k">
+                    <option value="3">Top 3</option>
+                    <option value="5" selected>Top 5</option>
+                    <option value="8">Top 8</option>
+                  </select>
+                </div>
+                <label class="sync-toggle">
+                  <input id="tr-exclude-squad" type="checkbox" checked />
+                  Exclude players from the same squad
+                </label>
+              </div>
+              <button class="submit-button" id="tr-search-btn" type="button">Find Replacements</button>
+              <div id="tr-status" class="form-note"></div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Player Being Replaced</div>
+              <h3>Profile of the selected player.</h3>
+              <div id="tr-subject-panel" class="empty-state">Select a player to see replacement suggestions.</div>
+            </article>
+          </div>
+          <div id="tr-results-panel" class="similar-players-grid" style="margin-top:1.5rem;"></div>
+        </section>
+
+        <!-- ==================== BEST XI ==================== -->
+        <section class="section-block" id="best-xi">
+          <div class="section-head">
+            <div class="eyebrow">Best XI Generator</div>
+            <h2>Automatically build the strongest possible starting lineup.</h2>
+            <p class="section-copy">
+              The Best XI is selected by ranking 2024/25 players on the composite Ballon d&apos;Or score
+              and picking the highest-rated player at each formation slot.
+            </p>
+          </div>
+          <div class="best-xi-controls">
+            <div class="field" style="max-width:240px;">
+              <label for="xi-formation">Formation</label>
+              <select id="xi-formation">
+                <option value="4-3-3" selected>4-3-3</option>
+                <option value="4-4-2">4-4-2</option>
+                <option value="3-5-2">3-5-2</option>
+                <option value="4-2-3-1">4-2-3-1</option>
+              </select>
+            </div>
+            <button class="submit-button" id="xi-generate-btn" type="button">Generate Best XI</button>
+          </div>
+          <div id="xi-status" class="form-note" style="text-align:center; margin:0.5rem 0;"></div>
+
+          <div class="best-xi-layout">
+            <div id="xi-pitch" class="xi-pitch">
+              <div class="empty-state" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">
+                Click Generate Best XI to see the lineup.
+              </div>
+            </div>
+            <div id="xi-sidebar" class="xi-sidebar"></div>
+          </div>
+        </section>
+
+        <!-- ==================== AWARDS ==================== -->
+        <section class="section-block" id="awards">
+          <div class="section-head">
+            <div class="eyebrow">Award Radar</div>
+            <h2>Ballon d&apos;Or-style candidates from the database.</h2>
+            <p id="award-subtitle" class="section-copy"></p>
+            <div id="award-model-stack" class="model-stack"></div>
+            <div id="award-how" class="how-list"></div>
+          </div>
+          <div id="award-insights" class="award-insight-grid"></div>
+          <div id="award-candidates" class="candidate-grid"></div>
+          <div class="surface-card award-footnote">
+            <div class="card-kicker">League Leaders</div>
+            <div id="award-leaders" class="leader-grid"></div>
+            <p id="award-methodology" class="award-methodology"></p>
+          </div>
+        </section>
+
+        <section class="section-block" id="scoreboard">
+          <div class="section-head">
+            <div class="eyebrow">Scoreboard</div>
+            <h2>Accuracy, lift, and leakage in one glance.</h2>
+          </div>
+          <div class="kpi-grid" id="kpi-grid"></div>
+        </section>
+
+        <section class="section-block split-block" id="compare">
+          <div class="section-head">
+            <div class="eyebrow">Comparisons</div>
+            <h2>How the models stack up across both tasks.</h2>
+          </div>
+          <div class="split-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Classification</div>
+              <h3>Position accuracy plus real player examples.</h3>
+              <div id="classification-chart" class="chart-stack"></div>
+              <div id="position-examples" class="example-stack"></div>
+            </article>
+
+            <article class="surface-card">
+              <div class="card-kicker">Regression</div>
+              <h3>Goals prediction strength with player-by-player examples.</h3>
+              <div id="regression-chart" class="chart-stack"></div>
+              <div id="goal-examples" class="example-stack"></div>
+              <div id="baseline-callout" class="baseline-callout"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-block" id="findings">
+          <div class="section-head">
+            <div class="eyebrow">Findings</div>
+            <h2>What the refresh actually changed.</h2>
+          </div>
+          <div class="findings-grid" id="findings-grid"></div>
+        </section>
+
+        <section class="section-block diagnostics-block" id="diagnostics">
+          <div class="section-head">
+            <div class="eyebrow">Diagnostics</div>
+            <h2>Per-class behavior and confusion hotspots.</h2>
+          </div>
+          <div class="split-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Shared Base</div>
+              <h3>Best-model confusion matrix.</h3>
+              <div id="combined-matrix"></div>
+              <div id="combined-classes" class="class-card-grid"></div>
+            </article>
+
+            <article class="surface-card">
+              <div class="card-kicker">Detailed 2024/25</div>
+              <h3>Best-model confusion matrix.</h3>
+              <div id="detailed-matrix"></div>
+              <div id="detailed-classes" class="class-card-grid"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-block split-block" id="features">
+          <div class="section-head">
+            <div class="eyebrow">Signals</div>
+            <h2>Which features carry the strongest pull.</h2>
+          </div>
+          <div class="triple-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Shared Classification</div>
+              <h3>Top proxy features.</h3>
+              <div id="classification-features"></div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Detailed Classification</div>
+              <h3>Richer tactical signal.</h3>
+              <div id="detailed-classification-features"></div>
+            </article>
+            <article class="surface-card">
+              <div class="card-kicker">Goals Regression</div>
+              <h3>Strongest ElasticNet coefficients.</h3>
+              <div id="regression-features"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-block dataset-section" id="dataset-lab">
+          <div class="section-head">
+            <div class="eyebrow">Dataset Lab</div>
+            <h2>Upload a CSV and score every player in one run.</h2>
+            <p class="section-copy">
+              Add a dataset with the same core stat columns and the dashboard will return
+              classification predictions, goals regression output, and the top 10 players from that file.
+            </p>
+          </div>
+
+          <div class="split-grid dataset-upload-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Batch Predictor</div>
+              <h3>Run both exported models on a full dataset.</h3>
+              <form id="dataset-form" class="model-form" onsubmit="console.log('inline form submit'); event.preventDefault(); handleDatasetSubmit(event); return false;">
+                <section class="form-group">
+                  <h4>Upload CSV</h4>
+                  <div class="field file-field">
+                    <label for="dataset-file">Choose CSV file</label>
+                    <input id="dataset-file" name="dataset-file" type="file" accept=".csv,text/csv" required />
+                  </div>
+                </section>
+                <section class="form-group">
+                  <h4>Models In Use</h4>
+                  <div class="field-grid">
+                    <div class="field">
+                      <label for="dataset-position-model">Position model</label>
+                      <select id="dataset-position-model" name="positionModel">
+                        <option value="HistGradientBoosting" selected>HistGradientBoosting</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="dataset-goals-model">Goals model</label>
+                      <select id="dataset-goals-model" name="goalsModel">
+                        <option value="ElasticNet" selected>ElasticNet</option>
+                      </select>
+                    </div>
+                  </div>
+                  <label class="sync-toggle">
+                    <input id="dataset-sync-position" type="checkbox" checked />
+                    Use the predicted position for the goals model on every row
+                  </label>
+                </section>
+                <p class="form-note">
+                  Recommended columns: Player, Nation, Squad, Comp, Pos, season, Age, Born, MP, Starts, Min, 90s,
+                  Gls, Ast, PK, PKatt, CrdY, CrdR, xG, npxG, xAG, PrgC, PrgP, PrgR. Missing fields will fall back
+                  to the training defaults.
+                </p>
+                <button class="submit-button" type="submit">Run Dataset Predictions</button>
+                <p class="form-note">
+                  If the dashboard is not fully loaded, start the server and refresh the page at <strong>http://127.0.0.1:8000</strong>.
+                </p>
+              </form>
+            </article>
+
+            <article class="surface-card">
+              <div class="card-kicker">Run Summary</div>
+              <h3>Coverage, warnings, and model setup.</h3>
+              <div id="dataset-summary" class="result-panel empty-state">
+                Upload a CSV to generate regression and classification predictions across the whole file.
+              </div>
+            </article>
+          </div>
+
+          <div class="split-grid dataset-results-grid">
+            <article class="surface-card">
+              <div class="card-kicker">Top 10 Ballon d'Or Candidates</div>
+              <h3>Highest composite scores from the uploaded dataset.</h3>
+              <div id="dataset-top10" class="dataset-top-grid">
+                <div class="loading-card">Run a dataset to see the Ballon d'Or candidates.</div>
+              </div>
+            </article>
+
+            <article class="surface-card">
+              <div class="card-kicker">League Leaders</div>
+              <h3>Top 5 predicted-goal players per league.</h3>
+              <div id="dataset-league-top5" class="dataset-league-grid">
+                <div class="loading-card">Run a dataset to see league leaders.</div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+      </main>
+    </div>
+
+    <script src="/app.js?v=3"></script>
+    <script>
+      console.log('Inline bottom script loaded');
+      const datasetForm = document.getElementById('dataset-form');
+      if (datasetForm) {
+        console.log('Inline bottom script found dataset-form');
+      } else {
+        console.log('Inline bottom script did NOT find dataset-form');
+      }
+    </script>
+  </body>
+</html>
