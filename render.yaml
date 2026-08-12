@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: football-player-analytics
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python dashboard_server.py --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
